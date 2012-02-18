@@ -1,0 +1,51 @@
+pkgname="busybox"
+pkgver="1.19.4"
+pkgrev="1"
+pkgdesc="A set of small programs"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://busybox.net/"
+license=('GPL')
+deps=()
+
+sources=(
+	http://busybox.net/downloads/busybox-$pkgver.tar.bz2
+	DOTconfig
+)
+
+groups=('core')
+provides=(
+	'bzip'
+	'coreutils'
+	'gawk'
+	'grep'
+	'gzip'
+	'less'
+	'sed'
+	'tar'
+	'wget'
+	'which'
+	'vi'
+	'xz'
+)
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+	
+	sed -i 's/-O2//g' Makefile # don't force optimization level
+	sed -i 's/-march=i386//' arch/i386/Makefile
+	cp "$srcdir/DOTconfig" .config
+	
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make CONFIG_PREFIX="$pkgdir" install
+}
+
+md5sums=(
+    '9c0cae5a0379228e7b55e5b29528df8e'
+    '6cd85e713c8efa39c70a702cd6d2b0e0'
+)

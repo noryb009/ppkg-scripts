@@ -1,0 +1,79 @@
+pkgname="bash"
+_basever="4.2"
+_patchs="020"
+pkgver="$_basever.$_patchs"
+pkgrev="1"
+pkgdesc="sh-compatible shell"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://www.gnu.org/software/bash/bash.html"
+license=('GPL')
+deps=('glibc')
+
+sources=( http://mirror.csclub.uwaterloo.ca/gnu/bash/bash-$_basever.tar.gz )
+for _patch in $(seq -w -s " " $_patchs); do
+	sources+=( http://mirror.csclub.uwaterloo.ca/gnu/bash/bash-$_basever-patches/bash${_basever/./}-$_patch )
+done
+
+groups=('core')
+provides=('sh')
+
+build() {
+	cd "$srcdir/$pkgname-$_basever"
+	
+	for _patch in $(seq -w -s " " $_patchs); do
+		patch -p0 < "$srcdir/bash${_basever/./}-$_patch"
+	done
+	
+	./configure --prefix=/usr \
+				--with-curses \
+				--without-installed-readline \
+				--enable-multibyte \
+	            --disable-profiling \
+	            --disable-static-link \
+				--enable-multibyte \
+				--without-bash-malloc \
+				--mandir=/usr/share/man \
+				--infodir=/usr/share/info
+	make
+}
+
+check() {
+  cd "$srcdir/$pkgname-$_basever"
+  make check
+}
+
+package() {
+	cd "$srcdir/$pkgname-$_basever"
+	make DESTDIR="$pkgdir/" install
+	
+	mkdir -p "$pkgdir/bin"
+	ln -s ../usr/bin/bash "$pkgdir/bin/bash"
+	ln -s ../usr/bin/bash "$pkgdir/bin/sh"
+	ln -s bash "$pkgdir/usr/bin/sh"
+}
+
+md5sums=(
+         '3fb927c7c33022f1c327f14a81c0d4b0'
+         '1100bc1dda2cdc06ac44d7e5d17864a3'
+         '30e7948079921d3261efcc6a40722135'
+         '9ea06decec43a198f3d7cf29acc602f8'
+         'fb48f6134d7b013135929476aa0c250c'
+         'e70e45de33426b38153b390be0dbbcd4'
+         'ce4e5c484993705b27daa151eca242c2'
+         '88d1f96db29461767602e2546803bda7'
+         '24c574bf6d6a581e300823d9c1276af6'
+         '4c5835f2fbab36c4292bb334977e5b6d'
+         '0a51602b535ef661ee707be6c8bdb373'
+         '58deacf3d57cbd75575444ff6a3b0806'
+         '72d5059820015231483bb7415d09e9db'
+         '608336ebe215984ef126e3c29d2d3409'
+         'ed19da878e3f630834c62b9d9dcc6fce'
+         '2d07daba0b8ca8f876d2aa052ff594b4'
+         '53d246537e1fffd1aaa02ba5c056211c'
+         '304fd129a58fee2d8a34f8b4704db0aa'
+         '6921a0b4228fe89b6537a5c29f027c89'
+         '1195d85447f3d048d2c9bcd075fa765c'
+         'b09000bba08da6ac753124593850cdf7'
+)

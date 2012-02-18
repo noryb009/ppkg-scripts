@@ -1,0 +1,47 @@
+pkgname="dialog"
+# version has an -, replace with an _
+_realver="1.1-20120215"
+pkgver="${_realver/-/_}"
+pkgrev="1"
+pkgdesc="Displays dialog boxes in a command window"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://invisible-island.net/dialog/"
+license=('GPL')
+deps=()
+
+sources=(
+	ftp://invisible-island.net/$pkgname/$pkgname-$_realver.tgz
+	dialogrc
+)
+
+groups=('core')
+
+build() {
+	cd "$srcdir/$pkgname-$_realver"
+	./configure \
+		--prefix=/usr \
+		--libexecdir=/usr/lib \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--enable-nls \
+		--enable-widec
+	
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname-$_realver"
+	make DESTDIR="$pkgdir/" install install-lib
+	
+	install -D -m 644 "$srcdir/dialogrc" "$pkgdir/etc/dialogrc" # default configuration file
+	
+	mkdir "$pkgdir/bin"
+	ln -s ../usr/bin/dialog "$pkgdir/bin/dialog"
+}
+
+md5sums=(
+    '494638fa36e5935a269ec9ab42677c30'
+    '25a6a49861b384506011c3fff616239e'
+)

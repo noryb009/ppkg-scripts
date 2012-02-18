@@ -1,0 +1,41 @@
+pkgname="dash"
+pkgver="0.5.7"
+pkgrev="1"
+pkgdesc="A small shell"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://gondor.apana.org.au/~herbert/dash/"
+licence=('bsd')
+deps=('glibc')
+
+provides=('sh')
+
+sources=(
+	http://gondor.apana.org.au/~herbert/$pkgname/files/$pkgname-$pkgver.tar.gz
+)
+
+groups=('core')
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+	./configure --prefix=/usr \
+		--mandir=/usr/share/man \
+		--enable-fnmatch \
+		--enable-glob
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make DESTDIR="$pkgdir/" install
+	
+	mkdir -p "$pkgdir/bin"
+	ln -s ../usr/bin/dash "$pkgdir/bin/dash"
+	
+	install -D -m 644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+md5sums=(
+    'f6cedb10ae7258adb5ab17a10ae80d51'
+)

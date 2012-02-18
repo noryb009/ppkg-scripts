@@ -1,0 +1,43 @@
+pkgname="squashfs-tools"
+pkgver="4.2"
+pkgrev="1"
+pkgdesc="Squash file system tools"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://squashfs.sourceforge.net/"
+licence=('GPL')
+deps=(
+	'xz'
+	'zlib'
+)
+
+sources=(
+	http://downloads.sourceforge.net/project/squashfs/squashfs/squashfs$pkgver/squashfs$pkgver.tar.gz
+)
+
+groups=('core')
+
+build() {
+	cd "$srcdir/squashfs$pkgver/$pkgname"
+	
+	sed -i 's/^#XZ_SUPPORT = 1$/XZ_SUPPORT = 1/' Makefile # include XZ support
+	
+	make
+}
+
+package() {
+	cd "$srcdir/squashfs$pkgver/$pkgname"
+	
+	install -D -m 755 mksquashfs "${pkgdir}/usr/bin/mksquashfs"
+	install -D -m 755 unsquashfs "${pkgdir}/usr/bin/unsquashfs"
+	
+	# links in /usr/sbin
+	mkdir -p "${pkgdir}/usr/sbin"
+	ln -s ../bin/mksquashfs "${pkgdir}/usr/sbin/mksquashfs"
+	ln -s ../bin/unsquashfs "${pkgdir}/usr/sbin/unsquashfs"
+}
+
+md5sums=(
+    '1b7a781fb4cf8938842279bd3e8ee852'
+)

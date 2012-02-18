@@ -1,0 +1,42 @@
+pkgname="zlib"
+pkgver="1.2.6"
+pkgrev="1"
+pkgdesc="Library for gzip and PKZIP"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://www.zlib.net/"
+licence=('custom')
+deps=('glibc')
+
+sources=(
+	http://downloads.sourceforge.net/project/libpng/$pkgname/$pkgver/$pkgname-$pkgver.tar.bz2
+)
+
+loc_DEV='EXE' # dev package
+
+groups=('core')
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+	./configure --prefix=/usr
+	make
+	
+	grep -A 24 '^  Copyright' zlib.h > LICENSE # get licence
+}
+
+check() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make test
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make DESTDIR="$pkgdir/" install
+	
+	install -D -m 644 LICENSE "${pkgdir}/usr/share/licenses/$pkgname/LICENSE" # install licence
+}
+
+md5sums=(
+    'dc2cfa0d2313ca77224b4d932b2911e9'
+)

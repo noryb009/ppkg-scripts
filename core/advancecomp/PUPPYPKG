@@ -1,0 +1,31 @@
+pkgname="advancecomp"
+pkgver="1.15"
+pkgrev="1"
+pkgdesc="Recompression utilities"
+pkgcategory="BuildingBlock"
+
+notarch=()
+url="http://advancemame.sourceforge.net/comp-readme.html"
+licence=('GPL')
+deps=('zlib')
+
+sources=(
+	http://downloads.sourceforge.net/project/advancemame/$pkgname/$pkgver/$pkgname-$pkgver.tar.gz
+)
+
+groups=('core')
+
+build() {
+	cd "$srcdir/$pkgname-$pkgver"
+	./configure --prefix=/usr --mandir=/usr/share/man
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make DESTDIR="$pkgdir/" install
+}
+
+md5sums=(
+    'bb236d8bee6fa473d34108cda1e09076'
+)
